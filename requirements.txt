@@ -2,7 +2,6 @@ Django==3.2.4
 channels==3.0.4
 redis==4.0.2
 django-redis==5.0.0
-
 psycopg2-binary==2.9.1
 channels_redis
 whitenoise==5.0

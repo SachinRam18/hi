@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Room: {{ room_name }}</title>
+    <style>
+        @font-face {
+            font-family: 'FiraSans';
+            src: url('/static/fonts/FiraSans-Book.ttf') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'KenyanCoffee';
+            src: url('/static/fonts/kenyan-coffee-rg.otf') format('opentype');
+        }
+
+        body {
+            font-family: 'FiraSans', Arial, sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #container {
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 60%;
+            max-width: 800px;
+            margin-top: 20px;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-family: 'KenyanCoffee', Arial, sans-serif;
+        }
+
+        #chat-box {
+            height: 400px;
+            overflow-y: scroll;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #0033cc, #66ccff);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            color: #ffffff;
+        }
+
+        .message.sent {
+            background-color: rgba(255, 255, 255, 0.3);
+            text-align: right;
+        }
+
+        .message.received {
+            background-color: rgba(255, 255, 255, 0.3);
+            text-align: left;
+        }
+
+        #message-box {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        #message-input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px 0 0 8px;
+            outline: none;
+            color: #000000;
+            caret-color: #000000;
+            font-family: 'FiraSans', Arial, sans-serif;
+        }
+
+        #send-button {
+            padding: 10px 20px;
+            border: none;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: #ffffff;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #send-button:hover {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .file-select-button {
+            background: linear-gradient(135deg, #2196F3, #0D47A1);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .file-select-button:hover {
+            background: linear-gradient(135deg, #0D47A1, #2196F3);
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Chat Room: {{ room_name }}</h1>
+        <div id="chat-box"></div>
+        <div id="message-box">
+            <input id="message-input" type="text" placeholder="Type your message here...">
+            <button id="send-button" onclick="sendMessage()">Send</button>
+            <input type="file" id="file-input" accept="image/*, video/*" onchange="handleFileSelect(event)">
+            <button class="file-select-button" onclick="document.getElementById('file-input').click()">Attach File</button>
+        </div>
+    </div>
+
+    <script>
+        const roomName = "{{ room_name }}";
+        const username = "{{ username }}";
+        const chatSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+        );
+
+        chatSocket.onopen = function(event) {
+            console.log('WebSocket connection established.');
+        };
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            const chatBox = document.querySelector('#chat-box');
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message ' + (data.username === username ? 'sent' : 'received');
+            if (data.message) {
+                messageElement.innerHTML = '<strong>' + data.username + ': </strong>' + emojiReplace(data.message);
+            } else if (data.image_data) {
+                messageElement.innerHTML = '<strong>' + data.username + ': </strong><br><img src="data:image/jpeg;base64,' + data.image_data + '" style="max-width: 100%; border-radius: 8px;">';
+            } else if (data.video_data) {
+                messageElement.innerHTML = '<strong>' + data.username + ': </strong><br><video controls><source src="' + data.video_data + '" type="video/mp4">Your browser does not support the video tag.</video>';
+            }
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        };
+
+        chatSocket.onclose = function(event) {
+            console.log('WebSocket connection closed.');
+        };
+
+        chatSocket.onerror = function(error) {
+            console.error('WebSocket error:', error);
+        };
+
+        function sendMessage() {
+            const messageInput = document.querySelector('#message-input');
+            const message = messageInput.value.trim();
+            if (message !== '') {
+                chatSocket.send(JSON.stringify({
+                    'username': username,
+                    'message': message
+                }));
+                messageInput.value = '';
+            }
+        }
+
+        function emojiReplace(message) {
+            return message.replace(/:(\w+):/g, (match, emojiCode) => {
+                switch (emojiCode) {
+                    case 'smile':
+                        return '😊';
+                    case 'heart':
+                        return '❤️';
+                    default:
+                        return match;
+                }
+            });
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const base64String = event.target.result.split(',')[1]; // Remove data:image/jpeg;base64, or data:video/mp4;base64, part
+                const messageType = file.type.startsWith('image') ? 'image_data' : 'video_data';
+                chatSocket.send(JSON.stringify({
+                    [`${messageType}`]: base64String,
+                    'username': username,
+                }));
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>

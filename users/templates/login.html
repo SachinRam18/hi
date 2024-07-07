@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        
+        #container {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        input[type="text"], input[type="password"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #cccccc;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        button[type="submit"] {
+            padding: 10px 20px;
+            background: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button[type="submit"]:hover {
+            background: #0056b3;
+        }
+        
+        a {
+            text-align: center;
+            display: block;
+            margin-top: 10px;
+            color: #ffffff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h2>Login</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Login</button>
+        </form>
+        <a href="{% url 'register' %}">Register</a>
+    </div>
+</body>
+</html>

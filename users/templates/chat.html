@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Rooms</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        
+        #container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333333;
+        }
+        
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        a {
+            display: block;
+            padding: 10px;
+            background: #007bff;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        
+        a:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h2>Chat Rooms</h2>
+        <ul>
+            {% for room in rooms %}
+                <li><a href="{% url 'chat' room_name=room.name %}">{{ room.name }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
