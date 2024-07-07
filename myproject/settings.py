@@ -5,7 +5,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-!)j@^e*o-@8hp2d-1+rtnzou5dk-f3xmi4r#=$k(^2o^y7emve'
 DEBUG = True
-ALLOWED_HOSTS = ['192.168.0.106', 'localhost', '127.0.0.1','.vercel.app']
+ALLOWED_HOSTS = ['your-vercel-domain.vercel.app', 'localhost', '127.0.0.1']
+
 
 INSTALLED_APPS = [
     'channels',
@@ -27,6 +28,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    # other middleware...
+
 ]
 
 ROOT_URLCONF = 'myproject.urls'
