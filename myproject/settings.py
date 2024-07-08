@@ -1,15 +1,11 @@
 import os
 from pathlib import Path
-import environ
-
-env = environ.Env()
-environ.Env.read_env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = env('SECRET_KEY')
-DEBUG = env.bool('DEBUG', default=False)
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+SECRET_KEY = 'django-insecure-!)j@^e*o-@8hp2d-1+rtnzou5dk-f3xmi4r#=$k(^2o^y7emve'
+DEBUG = True
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'channels',
@@ -31,42 +27,43 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'myproject.urls'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env('DATABASE_NAME'),
-        'USER': env('DATABASE_USER'),
-        'PASSWORD': env('DATABASE_PASSWORD'),
-        'HOST': env('DATABASE_HOST'),
-        'PORT': env('DATABASE_PORT'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'sachin',
+        'USER': 'sachin',
+        'PASSWORD': 'sachinram123',
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
+
 
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': env('REDIS_URL'),
+        'LOCATION': 'redis://redis:6379/1',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         },
     }
 }
 
-ASGI_APPLICATION = 'myproject.asgi.application'
-
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [env('REDIS_URL')],
+            'hosts': [('redis', 6379)],
         },
     },
 }
+
+
+ASGI_APPLICATION = 'myproject.asgi.application'
 
 TEMPLATES = [
     {
